@@ -7,7 +7,7 @@ class HTMLNode():
             self, 
             tag: Optional[str] = None, 
             value: Optional[str] = None, 
-            children: Optional[list[object]] = None, 
+            children: Optional[list['HTMLNode']] = None, 
             props: Optional[dict[str,str]] = None
         ) -> None:
         
