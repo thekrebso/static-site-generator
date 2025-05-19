@@ -48,8 +48,11 @@ class TestLeafNode(unittest.TestCase):
         self.assertRaises(ValueError, leafNode.to_html)
 
     def test_to_html_shouldRaiseOnInvalidValue3(self):
-        leafNode = LeafNode("p", "")
-        self.assertRaises(ValueError, leafNode.to_html)
+        leafNode = LeafNode("img", "", { "src": "/path", "alt": "alt text" })
+        self.assertEqual(
+            leafNode.to_html(),
+            '<img src="/path" alt="alt text"></img>'
+        )
 
     def test_to_html_shouldWorkWithoutATag(self):
         leafNode = LeafNode(None, "This is a leaf node without tag")
