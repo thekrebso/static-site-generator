@@ -16,8 +16,8 @@ class HTMLNode():
         self.children = children
         self.props = props
 
-    def to_html(self):
-        raise NotImplementedError()
+    def to_html(self) -> str:
+        raise NotImplementedError("child classes should implement this method")
 
     def props_to_html(self) -> str:
         if not isinstance(self.props, dict):
