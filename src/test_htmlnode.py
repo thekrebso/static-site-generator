@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -77,6 +77,70 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(
             leafNode.to_html(),
             '<p color="red" background-color="blue">This is a leaf node in p tag with props</p>'
+        )
+
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html_shouldRaiseWithoutATag1(self):
+        leafNode = LeafNode(None, "Leaf node without a tag")
+        parentNode = ParentNode(None, [leafNode]) # type: ignore
+        self.assertRaises(ValueError, parentNode.to_html)
+
+    def test_to_html_shouldRaiseWithoutATag2(self):
+        leafNode = LeafNode(None, "Leaf node without a tag")
+        parentNode = ParentNode("", [leafNode]) # type: ignore
+        self.assertRaises(ValueError, parentNode.to_html)
+        
+    def test_to_html_shouldRaiseWithoutChildren1(self):
+        parentNode = ParentNode("p", None) # type: ignore
+        self.assertRaises(ValueError, parentNode.to_html)
+
+    def test_to_html_shouldRaiseWithoutChildren2(self):
+        parentNode = ParentNode("p", []) # type: ignore
+        self.assertRaises(ValueError, parentNode.to_html)
+    
+    def test_to_html_shouldWorkWithoutNestedChildred(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+
+        self.assertEqual(
+            node.to_html(),
+            '<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>'
+        )
+
+    def test_to_html_shouldWorkWithNestedChildren(self):
+        leafNode1 = LeafNode(None, "This is a leaf node without tag")
+        leafNode2 = LeafNode("p", "This is a leaf node in p tag")
+
+        parentNode1 = ParentNode("div", [leafNode1, leafNode2], { "font-size": "12" })
+
+        leafNode3 = LeafNode("p", "This is a leaf node in p tag with props", { "color": "red", "background-color": "blue" })
+        parentNode2 = ParentNode("body", [leafNode3, parentNode1], { "font-size": "16" })
+
+        self.assertEqual(
+            parentNode2.to_html(),
+            '<body font-size="16"><p color="red" background-color="blue">This is a leaf node in p tag with props</p><div font-size="12">This is a leaf node without tag<p>This is a leaf node in p tag</p></div></body>'
+        )
+
+    def test_to_html_shouldWorkWithMultipleNestedChildren(self):
+        leafNode1 = LeafNode("b", "Bold text")
+        leafNode2 = LeafNode(None, "Normal text")
+
+        parentNode1 = ParentNode("p", [leafNode1])
+        parentNode2 = ParentNode("div", [parentNode1], { "color": "red", "font-size": "12" })
+        parentNode3 = ParentNode("div", [parentNode2, leafNode2])
+        parentNode4 = ParentNode("body", [parentNode3], { "font-size": "16" })
+
+        self.assertEqual(
+            parentNode4.to_html(),
+            '<body font-size="16"><div><div color="red" font-size="12"><p><b>Bold text</b></p></div>Normal text</div></body>'
         )
 
 
