@@ -30,4 +30,5 @@ class TextNode():
         )
 
     def __repr__(self) -> str:
-        return f"TextNode({self.text}, {self.text_type}, {self.url})"
+        url = f'"{self.url}"' if isinstance(self.url, str) else "None"
+        return f'TextNode("{self.text}", {self.text_type}, {url})'
