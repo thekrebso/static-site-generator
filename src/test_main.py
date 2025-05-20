@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextType, TextNode
-from main import text_node_to_html_node
+from main import text_node_to_html_node, split_nodes_delimiter
 
 
 class Test_TextNode_to_HTMLNode(unittest.TestCase):
@@ -55,6 +55,21 @@ class Test_TextNode_to_HTMLNode(unittest.TestCase):
     def test_invalid(self):
         node = TextNode("This is an invalid node", None) # type: ignore
         self.assertRaises(Exception, text_node_to_html_node, node)
+
+
+class Test_split_TextNode(unittest.TestCase):
+    def test_works(self):
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+
+        self.assertEqual(
+            new_nodes,
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" word", TextType.TEXT),
+            ]
+        )
 
 
 if __name__ == "__main__":

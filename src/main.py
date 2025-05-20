@@ -26,6 +26,10 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
             raise Exception("invalid TextType value")
 
 
+def split_nodes_delimiter(old_nodes: list['TextNode'], delimiter: str, text_type: TextType):
+    pass
+
+
 def main():
     textNode1 = TextNode("Some bold text", TextType.BOLD)
     textNode2 = TextNode("Some anchor text", TextType.LINK, "https://github.com")
