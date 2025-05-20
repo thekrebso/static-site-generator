@@ -14,3 +14,10 @@ Guided project from [boot.dev](https://boot.dev) with added type annotations
 > 4. Join all the HTMLNode blocks under one large parent HTMLNode for the pages.
 > 5. Use a recursive to_html() method to convert the HTMLNode and all its nested nodes to a giant HTML string and inject it in the HTML template.
 > 6. Write the full HTML string to a file for that page in the /public directory.
+
+
+## Possible Improvements
+
+### We Don't Care About Nested Inline Elements
+Markdown parsers often support nested inline elements. For example, you can have a bold word inside of italics:
+This is an _italic and **bold** word_.
