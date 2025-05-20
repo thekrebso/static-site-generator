@@ -58,7 +58,7 @@ class Test_TextNode_to_HTMLNode(unittest.TestCase):
 
 
 class Test_split_TextNode(unittest.TestCase):
-    def test_works(self):
+    def test_inline_code(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
         expected = [
             TextNode("This is text with a ", TextType.TEXT),
@@ -72,6 +72,97 @@ class Test_split_TextNode(unittest.TestCase):
             actual,
             expected,
             f"\nExpected: {expected}\nActual: {actual}"
+        )
+
+    def test_inline_bold(self):
+        node = TextNode("This is text with a **bold** word", TextType.TEXT)
+        expected = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" word", TextType.TEXT),
+        ]
+
+        actual = split_nodes_delimiter([node], "**", TextType.BOLD)
+
+        self.assertEqual(
+            actual,
+            expected,
+            f"\nExpected: {expected}\nActual: {actual}"
+        )
+
+    def test_inline_italic(self):
+        node = TextNode("This is text with a _italic_ word", TextType.TEXT)
+        expected = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word", TextType.TEXT),
+        ]
+
+        actual = split_nodes_delimiter([node], "_", TextType.ITALIC)
+
+        self.assertEqual(
+            actual,
+            expected,
+            f"\nExpected: {expected}\nActual: {actual}"
+        )
+
+    def test_inline_italic_unterminated(self):
+        node = TextNode("This is text with a _italic word", TextType.TEXT)
+
+        self.assertRaises(
+            Exception, 
+            split_nodes_delimiter,
+            [node], "_", TextType.ITALIC
+        )
+
+    def test_inline_multiple_same(self):
+        node = TextNode("This is text with a _italic_ word and another _italic_ word", TextType.TEXT)
+        expected = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and another ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word", TextType.TEXT),
+        ]
+
+        actual = split_nodes_delimiter([node], "_", TextType.ITALIC)
+
+        self.assertEqual(
+            actual,
+            expected,
+            f"\nExpected: {expected}\nActual: {actual}"
+        )
+
+    def test_inline_multiple_different(self):
+        node = TextNode("This is text with a _italic_ word and a **bold** word", TextType.TEXT)
+        
+        expected_first_pass = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a **bold** word", TextType.TEXT),
+        ]
+        
+        expected_second_pass = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" word", TextType.TEXT),
+        ]
+
+        actual_first_pass = split_nodes_delimiter([node], "_", TextType.ITALIC)
+        actual_second_pass = split_nodes_delimiter(actual_first_pass, "**", TextType.BOLD)
+
+        self.assertEqual(
+            actual_first_pass,
+            expected_first_pass,
+            f"\n----- First split -----\nExpected: {expected_first_pass}\nActual: {actual_first_pass}"
+        )
+
+        self.assertEqual(
+            actual_second_pass,
+            expected_second_pass,
+            f"\n----- Second split -----\nExpected: {expected_second_pass}\nActual: {actual_second_pass}"
         )
 
 
