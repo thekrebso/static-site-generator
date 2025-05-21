@@ -60,11 +60,100 @@ def extract_markdown_links(text: str) -> list[tuple[str, str]]:
     return matches
 
 
+def split_nodes_image(old_nodes: list['TextNode']) -> list['TextNode']:
+    new_nodes: list['TextNode'] = []
+    
+    for node in old_nodes:
+        matches = extract_markdown_images(node.text)
+
+        if len(matches) == 0:
+            new_nodes.append(node)
+            continue
+
+        texts = [node.text]
+        trailing_text = False
+
+        for match in matches:
+            last_text = texts.pop()
+
+            last_text_split = last_text.split(f"![{match[0]}]({match[1]})", maxsplit=1)
+
+            if last_text_split[-1] == "":
+                del last_text_split[-1]
+                trailing_text = False
+            else:
+                trailing_text = True
+
+            texts.extend(last_text_split)
+
+        new_nodes_count = len(texts) * 2
+        if trailing_text:
+            new_nodes_count -= 1
+
+        for i in range(new_nodes_count):
+            if i % 2 == 0:
+                text = texts[i // 2]
+                new_nodes.append(TextNode(text, TextType.TEXT))
+            else:
+                match = matches[(i - 1) // 2]
+                new_nodes.append(TextNode(match[0], TextType.IMAGE, match[1]))
+
+    return new_nodes 
+         
+
+def split_nodes_link(old_nodes: list['TextNode']) -> list['TextNode']:
+    new_nodes: list['TextNode'] = []
+
+    for node in old_nodes:
+        matches = extract_markdown_links(node.text)
+
+        if len(matches) == 0:
+            new_nodes.append(node)
+            continue
+
+        texts = [node.text]
+        trailing_text = False
+
+        for match in matches:
+            last_text = texts.pop()
+
+            last_text_split = last_text.split(f"[{match[0]}]({match[1]})", maxsplit=1)
+
+            if last_text_split[-1] == "":
+                del last_text_split[-1]
+                trailing_text = False
+            else:
+                trailing_text = True
+
+            texts.extend(last_text_split)
+
+        new_nodes_count = len(texts) * 2
+        if trailing_text:
+            new_nodes_count -= 1
+
+        for i in range(new_nodes_count):
+            if i % 2 == 0:
+                text = texts[i // 2]
+                new_nodes.append(TextNode(text, TextType.TEXT))
+            else:
+                match = matches[(i - 1) // 2]
+                new_nodes.append(TextNode(match[0], TextType.LINK, match[1]))
+
+    return new_nodes 
+
+
 def main():
     textNode1 = TextNode("Some bold text", TextType.BOLD)
     textNode2 = TextNode("Some anchor text", TextType.LINK, "https://github.com")
     htmlNode1 = HTMLNode(None, None, None, None)
     htmlNode2 = HTMLNode("h1", "this is a text inside a tag", [htmlNode1], { "target": "_blank" })
+
+    print(split_nodes_image([
+        TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) in the middle of text",
+            TextType.TEXT,
+        )
+    ]))
 
     print(textNode1)
     print(textNode2)
