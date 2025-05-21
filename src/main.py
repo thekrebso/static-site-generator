@@ -1,3 +1,4 @@
+from typing import Optional
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode
 
@@ -46,6 +47,14 @@ def split_nodes_delimiter(old_nodes: list['TextNode'], delimiter: str, text_type
                 new_nodes.append(TextNode(value, text_type, node.url))
 
     return new_nodes
+
+
+def extract_markdown_images(text: str) -> Optional[list[tuple[str, str]]]:
+    raise NotImplementedError()
+
+
+def extract_markdown_links(text: str) -> Optional[list[tuple[str, str]]]:
+    raise NotImplementedError()
 
 
 def main():
