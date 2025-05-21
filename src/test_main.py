@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextType, TextNode
-from main import text_node_to_html_node, split_nodes_delimiter
+from main import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 
 class Test_TextNode_to_HTMLNode(unittest.TestCase):
@@ -164,6 +164,45 @@ class Test_split_TextNode(unittest.TestCase):
             expected_second_pass,
             f"\n----- Second split -----\nExpected: {expected_second_pass}\nActual: {actual_second_pass}"
         )
+
+
+class Test_extract_md_images(unittest.TestCase):
+    def test_works1(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        expected = [
+            ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+            ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")
+        ]
+
+        actual = extract_markdown_images(text)
+
+        self.assertEqual(actual, expected, 
+                         f"\nExpected: {expected}\nActual: {actual}")
+
+    def test_works2(self):
+        text = "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        expected = [
+            ("image", "https://i.imgur.com/zjjcJKZ.png")
+        ]
+
+        actual = extract_markdown_images(text)
+
+        self.assertEqual(actual, expected, 
+                         f"\nExpected: {expected}\nActual: {actual}")
+
+
+class Test_extract_md_links(unittest.TestCase):
+    def test_works(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        expected = [
+            ("to boot dev", "https://www.boot.dev"), 
+            ("to youtube", "https://www.youtube.com/@bootdotdev")
+        ]
+
+        actual = extract_markdown_links(text)
+
+        self.assertEqual(actual, expected, 
+                         f"\nExpected: {expected}\nActual: {actual}")
 
 
 if __name__ == "__main__":
