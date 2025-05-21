@@ -213,7 +213,20 @@ class Test_extract_md_links(unittest.TestCase):
 
 
 class Test_split_nodes_image(unittest.TestCase):
-    def test_works(self):
+    def test_without(self):
+        node = TextNode(
+            "This is text without any images",
+            TextType.TEXT,
+        )
+        expected = [
+            TextNode("This is text without any images", TextType.TEXT),
+        ]
+
+        actual = split_nodes_image([node])
+
+        self.assertListEqual(actual, expected)
+
+    def test_works1(self):
         node = TextNode(
             "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
             TextType.TEXT,
@@ -231,9 +244,37 @@ class Test_split_nodes_image(unittest.TestCase):
 
         self.assertListEqual(actual, expected)
 
+    def test_works2(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) in the middle of text",
+            TextType.TEXT,
+        )
+        expected = [
+            TextNode("This is text with an ", TextType.TEXT),
+            TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+            TextNode(" in the middle of text", TextType.TEXT)
+        ]
+
+        actual = split_nodes_image([node])
+
+        self.assertListEqual(actual, expected)
+
 
 class Test_split_nodes_link(unittest.TestCase):
-    def test_works(self):
+    def test_without(self):
+        node = TextNode(
+            "This is text without any links",
+            TextType.TEXT,
+        )
+        expected = [
+            TextNode("This is text without any links", TextType.TEXT),
+        ]
+
+        actual = split_nodes_link([node])
+
+        self.assertListEqual(actual, expected)
+
+    def test_works1(self):
         node = TextNode(
             "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
             TextType.TEXT,
@@ -245,6 +286,21 @@ class Test_split_nodes_link(unittest.TestCase):
             TextNode(
                 "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
             ),
+        ]
+
+        actual = split_nodes_link([node])
+
+        self.assertListEqual(actual, expected)
+
+    def test_works2(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) in the middle of text",
+            TextType.TEXT,
+        )
+        expected = [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" in the middle of text", TextType.TEXT),
         ]
 
         actual = split_nodes_link([node])
