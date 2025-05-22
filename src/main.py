@@ -154,7 +154,10 @@ def text_to_textnodes(text: str) -> list['TextNode']:
 
 
 def markdown_to_blocks(markdown: str) -> list[str]:
-    pass
+    blocks = markdown.split("\n\n")
+    blocks = list(map(lambda x: x.strip(), blocks))
+    blocks = list(filter(lambda x: x != "", blocks))
+    return blocks
 
 
 def main():
