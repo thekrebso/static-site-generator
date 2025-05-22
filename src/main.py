@@ -142,6 +142,14 @@ def split_nodes_link(old_nodes: list['TextNode']) -> list['TextNode']:
     return new_nodes 
 
 
+def text_to_textnodes(text: str) -> list['TextNode']:
+    nodes: list['TextNode'] = []
+
+    # Not implemented
+
+    return nodes
+
+
 def main():
     textNode1 = TextNode("Some bold text", TextType.BOLD)
     textNode2 = TextNode("Some anchor text", TextType.LINK, "https://github.com")
