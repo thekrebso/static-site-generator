@@ -160,6 +160,10 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     return blocks
 
 
+def markdown_to_html_node(markdown: str) -> 'HTMLNode':
+    pass
+
+
 def main():
     textNode1 = TextNode("Some bold text", TextType.BOLD)
     textNode2 = TextNode("Some anchor text", TextType.LINK, "https://github.com")
