@@ -8,7 +8,8 @@ from main import (
     extract_markdown_links,
     split_nodes_image,
     split_nodes_link,
-    text_to_textnodes
+    text_to_textnodes,
+    markdown_to_blocks
 )
 
 
@@ -328,6 +329,31 @@ class Test_text_to_textnodes(unittest.TestCase):
         actual = text_to_textnodes(text)
 
         self.assertListEqual(actual, expected)
+
+
+class Test_markdown_to_blocks(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+"""
+        expected = [
+            "This is **bolded** paragraph",
+            "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+            "- This is a list\n- with items",
+        ]
+
+        actual = markdown_to_blocks(md)
+
+        self.assertListEqual(
+            actual,
+            expected
+        )
 
 
 if __name__ == "__main__":
