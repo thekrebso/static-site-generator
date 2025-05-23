@@ -21,7 +21,7 @@ def is_ordered_list(text: str) -> bool:
     return True
 
 
-def block_to_blocktype(block: str) -> 'BlockType':
+def block_to_blocktype(block: str) -> BlockType:
     if bool(re.match(r"^#{1,6} (?!#).*", block)):
         return BlockType.HEADING
     elif block.startswith("```") and block.endswith("```"):
