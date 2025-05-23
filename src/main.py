@@ -272,6 +272,25 @@ def extract_title(markdown: str) -> str:
     return header.strip("# ") 
 
 
+def read_contents(path: str) -> str:
+    with open(path) as file:
+        return file.read()
+
+
+def generate_page(from_path: str, template_path: str, dest_path: str):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+
+    from_file = read_contents(from_path)
+    template_file = read_contents(template_path)
+
+    title = extract_title(from_file)
+    html = markdown_to_html_node(from_file).to_html()
+
+    page = template_file.replace("{{ Title }}", title).replace("{{ Content }}", html)
+
+    with open(dest_path, "w") as file:
+        file.write(page)
+
 
 def main():
     copy_static_files()
