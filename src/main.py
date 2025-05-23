@@ -279,7 +279,10 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
     page = template_file.replace("{{ Title }}", title).replace("{{ Content }}", html)
 
-    with open(dest_path, "w") as file:
+    if not os.path.exists(os.path.split(dest_path)[0]):
+        os.makedirs(os.path.split(dest_path)[0])
+
+    with open(dest_path, "x") as file:
         file.write(page)
 
 
