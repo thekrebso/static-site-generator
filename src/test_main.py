@@ -373,7 +373,8 @@ This is another paragraph with _italic_ text and `code` here
 
         self.assertEqual(
             actual,
-            expected
+            expected,
+            f"\nExpected: {expected}\nActual: {actual}"
         )
 
     def test_codeblock(self):
@@ -389,7 +390,8 @@ the **same** even with inline stuff
 
         self.assertEqual(
             actual,
-            expected
+            expected,
+            f"\nExpected: {expected}\nActual: {actual}"
         )
 
 
