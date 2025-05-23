@@ -6,6 +6,12 @@ from htmlnode import HTMLNode, ParentNode, LeafNode
 from blocktype import BlockType, block_to_blocktype
 
 
+ROOT_PATH = "./"
+STATIC_PATH = "./static"
+CONTENT_PATH = "./content"
+PUBLIC_PATH = "./public"
+
+
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     match text_node.text_type:
         case TextType.TEXT:
@@ -248,10 +254,6 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
 
 
 def copy_static_files():
-    STATIC_PATH = "./static"
-    CONTENT_PATH = "./content"
-    PUBLIC_PATH = "./public"
-
     if not os.path.exists(STATIC_PATH) or not os.path.exists(CONTENT_PATH):
        print("Exiting...")
 
