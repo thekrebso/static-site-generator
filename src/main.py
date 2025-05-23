@@ -1,7 +1,8 @@
 from typing import Optional
 import re
 from textnode import TextNode, TextType
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, ParentNode, LeafNode
+from blocktype import BlockType, block_to_blocktype
 
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
@@ -160,8 +161,89 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     return blocks
 
 
-def markdown_to_html_node(markdown: str) -> 'HTMLNode':
-    pass
+def text_to_html_nodes(text: str, parent_tag: str = "div"):
+    children: list[HTMLNode] = []
+
+    for node in text_to_textnodes(text):
+        html_node = text_node_to_html_node(node)
+        children.append(html_node)
+
+    return ParentNode(parent_tag, children)
+    
+
+def markdown_to_html_node(markdown: str) -> ParentNode:
+    blocks = markdown_to_blocks(markdown)
+
+    root = ParentNode("div", [])
+
+    if not isinstance(root.children, list):
+        raise Exception("")
+
+    for block in blocks:
+        match block_to_blocktype(block):
+            case BlockType.HEADING:
+                tag, text = block.split(" ", maxsplit=1)
+
+                root.children.append(
+                    text_to_html_nodes(text, f"h{tag.count("#")}")
+                )
+
+            case BlockType.QUOTE:
+                text = ""
+
+                for line in block.split("\n"):
+                    line.strip()
+                    line.lstrip("> ")
+                    text += line
+
+                root.children.append(
+                    text_to_html_nodes(text, f"blockquote")
+                )
+
+            case BlockType.UNORDERED_LIST:
+                list_node = ParentNode("ul", [])
+
+                if not isinstance(list_node.children, list):
+                    raise Exception("")
+
+                for line in block.split():
+                    line.strip()
+                    line.lstrip("- ")
+                    list_node.children.append(
+                        text_to_html_nodes(line, f"li")
+                    )
+
+                root.children.append(list_node)
+
+            case BlockType.ORDERED_LIST:
+                list_node = ParentNode("ol", [])
+
+                if not isinstance(list_node.children, list):
+                    raise Exception("")
+
+                for i, line in enumerate(block.split()):
+                    line.strip()
+                    line.lstrip(f"{i+1}. ")
+                    list_node.children.append(
+                        text_to_html_nodes(line, f"li")
+                    )
+
+                root.children.append(list_node)
+
+            case BlockType.CODE:
+                text = block.strip("```")
+                text = text.lstrip()
+
+                root.children.append(
+                    ParentNode("pre", [LeafNode("code", text)])
+                )
+
+            case BlockType.PARAGRAPH:
+                root.children.append(
+                    text_to_html_nodes(block.replace("\n", " "), f"p")
+                )
+
+    return root
 
 
 def main():
