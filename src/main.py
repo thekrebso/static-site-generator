@@ -1,5 +1,6 @@
 from typing import Optional
 import re
+import os, shutil
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, ParentNode, LeafNode
 from blocktype import BlockType, block_to_blocktype
@@ -246,8 +247,22 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
     return root
 
 
+def copy_static_files():
+    STATIC_PATH = "./static"
+    CONTENT_PATH = "./content"
+    PUBLIC_PATH = "./public"
+
+    if not os.path.exists(STATIC_PATH) or not os.path.exists(CONTENT_PATH):
+       print("Exiting...")
+
+    if os.path.exists(PUBLIC_PATH):
+        shutil.rmtree(PUBLIC_PATH)
+
+    shutil.copytree(STATIC_PATH, PUBLIC_PATH)
+
+
 def main():
-    pass
+    copy_static_files()
 
 
 if __name__ == "__main__":
