@@ -294,6 +294,11 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
 def main():
     copy_static_files()
+    generate_page(
+        os.path.join(CONTENT_PATH, "index.md"),
+        os.path.join(ROOT_PATH, "template.html"),
+        os.path.join(PUBLIC_PATH, "index.html"),
+    )
 
 
 if __name__ == "__main__":
