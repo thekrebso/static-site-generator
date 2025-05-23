@@ -30,7 +30,7 @@ def block_to_blocktype(block: str) -> BlockType:
         return BlockType.UNORDERED_LIST
     elif is_ordered_list(block):
         return BlockType.ORDERED_LIST
-    elif all(line.startswith("> ") for line in block.splitlines()):
+    elif all(line.startswith("> ") or line.strip() == ">" for line in block.splitlines()):
         return BlockType.QUOTE
     else:
         return BlockType.PARAGRAPH
