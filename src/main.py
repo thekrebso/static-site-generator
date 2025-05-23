@@ -261,6 +261,16 @@ def copy_static_files():
     shutil.copytree(STATIC_PATH, PUBLIC_PATH)
 
 
+def extract_title(markdown: str) -> str:
+    
+    header = markdown.strip("\n").split("\n", maxsplit=1)[0]
+    if not header.startswith("# "):
+        raise Exception("Could not extract title")
+
+    return header.strip("# ") 
+
+
+
 def main():
     copy_static_files()
 
