@@ -199,9 +199,7 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
                 text = ""
 
                 for line in block.split("\n"):
-                    line.strip()
-                    line.lstrip("> ")
-                    text += line
+                    text += line.strip().lstrip("> ")
 
                 root.children.append(
                     text_to_html_nodes(text, f"blockquote")
@@ -213,11 +211,9 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
                 if not isinstance(list_node.children, list):
                     raise Exception("")
 
-                for line in block.split():
-                    line.strip()
-                    line.lstrip("- ")
+                for line in block.split("\n"):
                     list_node.children.append(
-                        text_to_html_nodes(line, f"li")
+                        text_to_html_nodes(line.strip().lstrip("- "), f"li")
                     )
 
                 root.children.append(list_node)
@@ -228,21 +224,16 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
                 if not isinstance(list_node.children, list):
                     raise Exception("")
 
-                for i, line in enumerate(block.split()):
-                    line.strip()
-                    line.lstrip(f"{i+1}. ")
+                for i, line in enumerate(block.split("\n")):
                     list_node.children.append(
-                        text_to_html_nodes(line, f"li")
+                        text_to_html_nodes(line.strip().lstrip(f"{i+1}. "), f"li")
                     )
 
                 root.children.append(list_node)
 
             case BlockType.CODE:
-                text = block.strip("```")
-                text = text.lstrip()
-
                 root.children.append(
-                    ParentNode("pre", [LeafNode("code", text)])
+                    ParentNode("pre", [LeafNode("code", block.strip("```").lstrip())])
                 )
 
             case BlockType.PARAGRAPH:
