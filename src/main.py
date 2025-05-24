@@ -6,10 +6,11 @@ from htmlnode import HTMLNode, ParentNode, LeafNode
 from blocktype import BlockType, block_to_blocktype
 
 
-ROOT_PATH = "./"
-STATIC_PATH = "./static"
-CONTENT_PATH = "./content"
-PUBLIC_PATH = "./public"
+ROOT_PATH_DIR = "./"
+STATIC_PATH_DIR = "./static"
+CONTENT_PATH_DIR = "./content"
+PUBLIC_PATH_DIR = "./public"
+TEMPLATE_PATH = os.path.join(ROOT_PATH_DIR, "template.html")
 
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
@@ -245,13 +246,13 @@ def markdown_to_html_node(markdown: str) -> ParentNode:
 
 
 def copy_static_files():
-    if not os.path.exists(STATIC_PATH) or not os.path.exists(CONTENT_PATH):
+    if not os.path.exists(STATIC_PATH_DIR) or not os.path.exists(CONTENT_PATH_DIR):
        print("Exiting...")
 
-    if os.path.exists(PUBLIC_PATH):
-        shutil.rmtree(PUBLIC_PATH)
+    if os.path.exists(PUBLIC_PATH_DIR):
+        shutil.rmtree(PUBLIC_PATH_DIR)
 
-    shutil.copytree(STATIC_PATH, PUBLIC_PATH)
+    shutil.copytree(STATIC_PATH_DIR, PUBLIC_PATH_DIR)
 
 
 def extract_title(markdown: str) -> str:
@@ -286,28 +287,26 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
         file.write(page)
 
 
-def generate_pages_recursively(from_path: str, root_path: str, content_path: str, public_path: str):
-    paths = os.listdir(from_path)
+def generate_pages_recursively(from_dir: str, template_path: str, to_dir: str):
+    paths = os.listdir(from_dir)
 
     for path in paths:
-        if os.path.isfile(os.path.join(from_path, path)):
+        if os.path.isfile(os.path.join(from_dir, path)):
             filename, extension = os.path.splitext(path)
 
             if extension == ".md":
-                relpath = os.path.relpath(from_path, content_path)
-
                 generate_page(
-                    os.path.join(from_path, f"{filename}.md"),
-                    os.path.join(root_path, "template.html"),
-                    os.path.join(os.path.join(public_path, relpath), f"{filename}.html")
+                    os.path.join(from_dir, f"{filename}.md"),
+                    template_path,
+                    os.path.join(to_dir, f"{filename}.html")
                 )
         else:
-            generate_pages_recursively(os.path.join(from_path, path), ROOT_PATH, CONTENT_PATH, PUBLIC_PATH)
+            generate_pages_recursively(os.path.join(from_dir, path), template_path, os.path.join(to_dir, path))
 
 
 def main():
     copy_static_files()
-    generate_pages_recursively(CONTENT_PATH, ROOT_PATH, CONTENT_PATH, PUBLIC_PATH)
+    generate_pages_recursively(CONTENT_PATH_DIR, TEMPLATE_PATH, PUBLIC_PATH_DIR)
 
 
 if __name__ == "__main__":
