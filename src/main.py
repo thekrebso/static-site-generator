@@ -284,6 +284,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str, basepath: 
             .replace("{{ Title }}", title)
             .replace("{{ Content }}", html)
             .replace('href="/', f'href="{basepath}')
+            .replace('src="/', f'src="{basepath}')
     )
 
     if not os.path.exists(os.path.split(dest_path)[0]):
