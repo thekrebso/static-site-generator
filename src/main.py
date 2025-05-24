@@ -286,13 +286,28 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
         file.write(page)
 
 
+def generate_pages_recursively(from_path: str, root_path: str, content_path: str, public_path: str):
+    paths = os.listdir(from_path)
+
+    for path in paths:
+        if os.path.isfile(os.path.join(from_path, path)):
+            filename, extension = os.path.splitext(path)
+
+            if extension == ".md":
+                relpath = os.path.relpath(from_path, content_path)
+
+                generate_page(
+                    os.path.join(from_path, f"{filename}.md"),
+                    os.path.join(root_path, "template.html"),
+                    os.path.join(os.path.join(public_path, relpath), f"{filename}.html")
+                )
+        else:
+            generate_pages_recursively(os.path.join(from_path, path), ROOT_PATH, CONTENT_PATH, PUBLIC_PATH)
+
+
 def main():
     copy_static_files()
-    generate_page(
-        os.path.join(CONTENT_PATH, "index.md"),
-        os.path.join(ROOT_PATH, "template.html"),
-        os.path.join(PUBLIC_PATH, "index.html"),
-    )
+    generate_pages_recursively(CONTENT_PATH, ROOT_PATH, CONTENT_PATH, PUBLIC_PATH)
 
 
 if __name__ == "__main__":
