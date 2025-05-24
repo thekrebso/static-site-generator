@@ -1,6 +1,7 @@
 from typing import Optional
 import re
 import os, shutil
+import sys
 from textnode import TextNode, TextType
 from htmlnode import HTMLNode, ParentNode, LeafNode
 from blocktype import BlockType, block_to_blocktype
@@ -269,7 +270,7 @@ def read_contents(path: str) -> str:
         return file.read()
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
     from_file = read_contents(from_path)
@@ -278,7 +279,12 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     title = extract_title(from_file)
     html = markdown_to_html_node(from_file).to_html()
 
-    page = template_file.replace("{{ Title }}", title).replace("{{ Content }}", html)
+    page = (
+        template_file
+            .replace("{{ Title }}", title)
+            .replace("{{ Content }}", html)
+            .replace('href="/', f'href="{basepath}')
+    )
 
     if not os.path.exists(os.path.split(dest_path)[0]):
         os.makedirs(os.path.split(dest_path)[0])
@@ -287,7 +293,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
         file.write(page)
 
 
-def generate_pages_recursively(from_dir: str, template_path: str, to_dir: str):
+def generate_pages_recursively(from_dir: str, template_path: str, to_dir: str, basepath: str):
     paths = os.listdir(from_dir)
 
     for path in paths:
@@ -298,15 +304,29 @@ def generate_pages_recursively(from_dir: str, template_path: str, to_dir: str):
                 generate_page(
                     os.path.join(from_dir, f"{filename}.md"),
                     template_path,
-                    os.path.join(to_dir, f"{filename}.html")
+                    os.path.join(to_dir, f"{filename}.html"),
+                    basepath
                 )
         else:
-            generate_pages_recursively(os.path.join(from_dir, path), template_path, os.path.join(to_dir, path))
+            generate_pages_recursively(
+                os.path.join(from_dir, path), 
+                template_path, 
+                os.path.join(to_dir, path),
+                basepath
+            )
 
 
 def main():
+    basepath = "/"
+    
+    if len(sys.argv) > 2:
+        print("Too many arguments passed. Usage: ./main.sh [basepath=/]")
+        sys.exit(1)
+    elif len(sys.argv) == 2:
+        basepath = sys.argv[1]
+
     copy_static_files()
-    generate_pages_recursively(CONTENT_PATH_DIR, TEMPLATE_PATH, PUBLIC_PATH_DIR)
+    generate_pages_recursively(CONTENT_PATH_DIR, TEMPLATE_PATH, PUBLIC_PATH_DIR, basepath)
 
 
 if __name__ == "__main__":
