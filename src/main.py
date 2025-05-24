@@ -9,7 +9,7 @@ from blocktype import BlockType, block_to_blocktype
 ROOT_PATH_DIR = "./"
 STATIC_PATH_DIR = "./static"
 CONTENT_PATH_DIR = "./content"
-PUBLIC_PATH_DIR = "./public"
+PUBLIC_PATH_DIR = "./docs"
 TEMPLATE_PATH = os.path.join(ROOT_PATH_DIR, "template.html")
 
 
